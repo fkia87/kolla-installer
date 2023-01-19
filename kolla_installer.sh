@@ -8,6 +8,10 @@ sudo rm -rf $VENV_NAME all-in-one /etc/kolla
 exit
 }
 
+function error {
+echo -e "\n${RED}Error!${DECOLOR}\n"; cleanup;
+}
+
 files=("resources/pkg_management" "resources/os" "resources/network" "resources/bash_colors")
 
 if ! [[ -f ${files[0]} ]] \
@@ -54,40 +58,36 @@ DISTRO=$(os)
 read -p "Enter the name of backeng VG for Cinder[cinder-volumes]: " VG
 [[ "$VG" == "" ]] && VG=cinder-volumes
 
-sudo vgs | grep -q $VG || { echo "VG $VG not found."; exit 2; }
+sudo vgs | grep -q $VG || { echo "VG $VG not found."; cleanup; }
 
 sudo apt update && sudo apt upgrade -y
 
-sudo apt -y install python3-dev libffi-dev gcc libssl-dev || \
-{ echo -e "\n${RED}Error!${DECOLOR}\n"; cleanup; }
+sudo apt -y install python3-dev libffi-dev gcc libssl-dev || error
 
 #sudo apt -y install python3-pip
 
-sudo apt -y install python3-venv || { echo -e "\n${RED}Error!${DECOLOR}\n"; cleanup; }
+sudo apt -y install python3-venv || error
 
-python3 -m venv $VENV_NAME || { echo -e "\n${RED}Error!${DECOLOR}\n"; cleanup; }
-source $VENV_NAME/bin/activate || { echo -e "\n${RED}Error!${DECOLOR}\n"; cleanup; }
+python3 -m venv $VENV_NAME || error
+source $VENV_NAME/bin/activate || error
 
-pip install -U pip || { echo -e "\n${RED}Error!${DECOLOR}\n"; cleanup; }
+pip install -U pip || error
 
-pip install 'ansible>=4,<6' || { echo -e "\n${RED}Error!${DECOLOR}\n"; cleanup; }
+pip install 'ansible>=4,<6' || error
 
-pip install git+https://opendev.org/openstack/kolla-ansible@master || \
-{ echo -e "\n${RED}Error!${DECOLOR}\n"; cleanup; }
+pip install git+https://opendev.org/openstack/kolla-ansible@master || error
 
 sudo rm -rf /etc/kolla ./all-in-one
 sudo mkdir /etc/kolla
 
 sudo chown $USER:$(id -gn $USER) /etc/kolla
 
-cp -r $VENV_NAME/share/kolla-ansible/etc_examples/kolla/* /etc/kolla/ || \
-{ echo -e "\n${RED}Error!${DECOLOR}\n"; cleanup; }
+cp -r $VENV_NAME/share/kolla-ansible/etc_examples/kolla/* /etc/kolla/ || error
 
 #cp $VENV_NAME/share/kolla-ansible/ansible/inventory/* /etc/kolla/
-cp $VENV_NAME/share/kolla-ansible/ansible/inventory/all-in-one . || \
-{ echo -e "\n${RED}Error!${DECOLOR}\n"; cleanup; }
+cp $VENV_NAME/share/kolla-ansible/ansible/inventory/all-in-one . || error
 
-kolla-ansible install-deps || { echo -e "\n${RED}Error!${DECOLOR}\n"; cleanup; }
+kolla-ansible install-deps || error
 
 #sudo mkdir -p /etc/ansible
 
@@ -113,8 +113,8 @@ echo -e "\n${YELLOW}Generating password...${DECOLOR}\n"
 kolla-genpwd
 echo -e "\n${GREEN}Done!${DECOLOR}\n"
 
-kolla-ansible -i ./all-in-one bootstrap-servers || { echo -e "\n${RED}Error!${DECOLOR}\n"; cleanup; }
+kolla-ansible -i ./all-in-one bootstrap-servers || error
 
-kolla-ansible -i ./all-in-one prechecks || { echo -e "\n${RED}Error!${DECOLOR}\n"; cleanup; }
+kolla-ansible -i ./all-in-one prechecks || error
 
-kolla-ansible -i ./all-in-one deploy || { echo -e "\n${RED}Error!${DECOLOR}\n"; cleanup; }
+kolla-ansible -i ./all-in-one deploy || error
