@@ -38,7 +38,7 @@ DISTRO=$(os)
 
 read -p "Enter the name of backeng VG for Cinder: " VG
 
-sudo lvs | grep -q $VG || { echo "VG $VG not found."; exit 2; }
+sudo vgs | grep -q $VG || { echo "VG $VG not found."; exit 2; }
 
 sudo apt update && sudo apt upgrade -y
 
@@ -57,14 +57,15 @@ pip install 'ansible>=4,<6'
 
 pip install git+https://opendev.org/openstack/kolla-ansible@master
 
-sudo mkdir -p /etc/kolla
+sudo rm -rf /etc/kolla ./all-in-one
+sudo mkdir /etc/kolla
 
 sudo chown $USER:$(id -gn $USER) /etc/kolla
 
-cp -r /home/$USER/$VENV_NAME/share/kolla-ansible/etc_examples/kolla/* /etc/kolla/
+cp -r $VENV_NAME/share/kolla-ansible/etc_examples/kolla/* /etc/kolla/
 
-#cp /home/$USER/$VENV_NAME/share/kolla-ansible/ansible/inventory/* /etc/kolla/
-cp /path/to/venv/share/kolla-ansible/ansible/inventory/all-in-one .
+#cp $VENV_NAME/share/kolla-ansible/ansible/inventory/* /etc/kolla/
+cp $VENV_NAME/share/kolla-ansible/ansible/inventory/all-in-one .
 
 kolla-ansible install-deps
 
