@@ -42,32 +42,36 @@ sudo vgs | grep -q $VG || { echo "VG $VG not found."; exit 2; }
 
 sudo apt update && sudo apt upgrade -y
 
-sudo apt -y install python3-dev libffi-dev gcc libssl-dev
+sudo apt -y install python3-dev libffi-dev gcc libssl-dev || \
+{ echo -e "\n${RED}Error!${DECOLOR}\n"; exit 4 }
 
 #sudo apt -y install python3-pip
 
-sudo apt -y install python3-venv
+sudo apt -y install python3-venv || { echo -e "\n${RED}Error!${DECOLOR}\n"; exit 4 }
 
-python3 -m venv $VENV_NAME
-source $VENV_NAME/bin/activate
+python3 -m venv $VENV_NAME || { echo -e "\n${RED}Error!${DECOLOR}\n"; exit 4 }
+source $VENV_NAME/bin/activate || { echo -e "\n${RED}Error!${DECOLOR}\n"; exit 4 }
 
-pip install -U pip
+pip install -U pip || { echo -e "\n${RED}Error!${DECOLOR}\n"; exit 4 }
 
-pip install 'ansible>=4,<6'
+pip install 'ansible>=4,<6' || { echo -e "\n${RED}Error!${DECOLOR}\n"; exit 4 }
 
-pip install git+https://opendev.org/openstack/kolla-ansible@master
+pip install git+https://opendev.org/openstack/kolla-ansible@master || \
+{ echo -e "\n${RED}Error!${DECOLOR}\n"; exit 4 }
 
 sudo rm -rf /etc/kolla ./all-in-one
 sudo mkdir /etc/kolla
 
 sudo chown $USER:$(id -gn $USER) /etc/kolla
 
-cp -r $VENV_NAME/share/kolla-ansible/etc_examples/kolla/* /etc/kolla/
+cp -r $VENV_NAME/share/kolla-ansible/etc_examples/kolla/* /etc/kolla/ || \
+{ echo -e "\n${RED}Error!${DECOLOR}\n"; exit 4 }
 
 #cp $VENV_NAME/share/kolla-ansible/ansible/inventory/* /etc/kolla/
-cp $VENV_NAME/share/kolla-ansible/ansible/inventory/all-in-one .
+cp $VENV_NAME/share/kolla-ansible/ansible/inventory/all-in-one . || \
+{ echo -e "\n${RED}Error!${DECOLOR}\n"; exit 4 }
 
-kolla-ansible install-deps
+kolla-ansible install-deps || { echo -e "\n${RED}Error!${DECOLOR}\n"; exit 4 }
 
 #sudo mkdir -p /etc/ansible
 
@@ -93,8 +97,8 @@ echo -e "\nGenerating password...\n"
 kolla-genpwd
 echo -e "\nDone!\n"
 
-kolla-ansible -i ./all-in-one bootstrap-servers && \
+kolla-ansible -i ./all-in-one bootstrap-servers || { echo -e "\n${RED}Error!${DECOLOR}\n"; exit 4 }
 
-kolla-ansible -i ./all-in-one prechecks && \
+kolla-ansible -i ./all-in-one prechecks || { echo -e "\n${RED}Error!${DECOLOR}\n"; exit 4 }
 
-kolla-ansible -i ./all-in-one deploy
+kolla-ansible -i ./all-in-one deploy || { echo -e "\n${RED}Error!${DECOLOR}\n"; exit 4 }
