@@ -93,8 +93,8 @@ echo -e "\nGenerating password...\n"
 kolla-genpwd
 echo -e "\nDone!\n"
 
-kolla-ansible -i ./all-in-one bootstrap-servers
+kolla-ansible -i ./all-in-one bootstrap-servers && \
 
-kolla-ansible -i ./all-in-one prechecks
+kolla-ansible -i ./all-in-one prechecks && \
 
 kolla-ansible -i ./all-in-one deploy
