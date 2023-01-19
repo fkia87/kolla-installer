@@ -48,7 +48,6 @@ do
     [[ "$NEUTRON_IF" != "" ]] && break
 done
 echo -e "${DECOLOR}"
-read -p  NEUTRON_IF
 
 DISTRO=$(os)
 
