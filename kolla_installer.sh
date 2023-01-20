@@ -5,6 +5,7 @@ trap cleanup 2
 function cleanup {
 echo "Cleaning up..."
 sudo rm -rf $VENV_NAME all-in-one /etc/kolla
+pip -y uninstall ansible ansible-core kolla-ansible
 exit
 }
 
@@ -96,11 +97,18 @@ sudo apt -y install python3-venv || error
 python3 -m venv $VENV_NAME || error
 source $VENV_NAME/bin/activate || error
 
-pip install -U pip || error
+pip -y install -U pip || error
 
-pip install 'ansible>=4,<6' || error
-
-pip install git+https://opendev.org/openstack/kolla-ansible@master || error
+case $version in
+latest)
+    pip -y install 'ansible>=4,<6' || error
+    pip -y install git+https://opendev.org/openstack/kolla-ansible@master || error
+    ;;
+wallaby)
+    pip -y install 'ansible<3.0' || error
+    pip -y install git+https://opendev.org/openstack/kolla-ansible@stable/wallaby || error
+    ;;
+esac
 
 sudo rm -rf /etc/kolla ./all-in-one
 sudo mkdir /etc/kolla
