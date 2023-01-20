@@ -16,8 +16,8 @@ echo -e "\n${RED}Error!${DECOLOR}\n"; cleanup;
 function usage {
 echo ""
 echo "Usage:"
-echo "$0 [latest|wallaby]       Install latest or wallaby version"
-echo "$0 [-h|--help]            Show this help"
+echo "  $0 [latest|wallaby]       Install latest or wallaby version"
+echo "  $0 [-h|--help]            Show this help"
 echo ""
 }
 
