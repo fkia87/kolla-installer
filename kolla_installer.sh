@@ -80,7 +80,7 @@ do
 done
 echo -e "${DECOLOR}"
 
-[[ $(os) != "ubuntu" ]] && echo -e "\n${RED}Unsupported distro!${DECOLOR}\n"; cleanup;
+[[ $(os) != "ubuntu" ]] && { echo -e "\n${RED}Unsupported distro!${DECOLOR}\n"; cleanup; }
 DISTRO=$(os)
 
 read -p "Enter the name of backeng VG for Cinder[cinder-volumes]: " VG
