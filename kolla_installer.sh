@@ -12,6 +12,12 @@ function error {
 echo -e "\n${RED}Error!${DECOLOR}\n"; cleanup;
 }
 
+function usage {
+echo "Usage:"
+echo "$0 [latest|wallaby]       Install latest or wallaby version"
+echo "$0 [-h|--help]            Show this help"
+}
+
 files=("resources/pkg_management" "resources/os" "resources/network" "resources/bash_colors")
 
 if ! [[ -f ${files[0]} ]] \
@@ -28,6 +34,24 @@ fi
 for file in ${files[@]}; do
     source $file
 done
+
+case $1 in
+"" | latest)
+    version=latest
+    ;;
+wallaby | Wallaby)
+    version=wallaby
+    ;;
+-h | --help)
+    usage
+    exit
+    ;;
+*)
+    echo -e "${RED}Invalid version!${DECOLOR}"
+    cleanup
+    ;;
+esac
+echo -e "Installing ${BLUE}${BOLD}$version${DECOLOR} version..."
 
 read -p "Enter a name for your virtual environment[test_venv]: " VENV_NAME
 [[ "$VENV_NAME" == "" ]] && VENV_NAME=test_venv
@@ -53,6 +77,7 @@ do
 done
 echo -e "${DECOLOR}"
 
+[[ $(os) != "ubuntu" ]] && echo -e "\n${RED}Unsupported distro!${DECOLOR}\n"; cleanup;
 DISTRO=$(os)
 
 read -p "Enter the name of backeng VG for Cinder[cinder-volumes]: " VG
