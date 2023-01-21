@@ -5,7 +5,6 @@ trap cleanup 2
 function cleanup {
 echo "Cleaning up..."
 sudo rm -rf $VENV_NAME all-in-one /etc/kolla
-pip uninstall ansible ansible-core kolla-ansible
 exit
 }
 
