@@ -143,6 +143,7 @@ esac
 cat << EOF | sudo tee -a /etc/kolla/globals.yml
 enable_haproxy: "no"
 kolla_internal_vip_address: "$IP"
+docker_registry: registry.ficld.ir
 network_interface: "$MAINIF"
 neutron_external_interface: "$NEUTRON_IF"
 enable_cinder: "yes"
