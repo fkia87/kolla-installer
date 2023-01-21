@@ -147,8 +147,11 @@ echo -e "\n${YELLOW}Generating password...${DECOLOR}\n"
 kolla-genpwd
 echo -e "\n${GREEN}Done!${DECOLOR}\n"
 
-kolla-ansible -i ./all-in-one bootstrap-servers || error
+kolla-ansible -i ./all-in-one bootstrap-servers || \
+{ echo -e "${RED}Exit code is $?."; read -p "Continue?" TEST; }
 
-kolla-ansible -i ./all-in-one prechecks || error
+kolla-ansible -i ./all-in-one prechecks || \
+{ echo -e "${RED}Exit code is $?."; read -p "Continue?" TEST; }
 
-kolla-ansible -i ./all-in-one deploy || error
+kolla-ansible -i ./all-in-one deploy || \
+{ echo -e "${RED}Exit code is $?."; read -p "Continue?" TEST; }
