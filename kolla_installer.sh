@@ -148,10 +148,10 @@ kolla-genpwd
 echo -e "\n${GREEN}Done!${DECOLOR}\n"
 
 kolla-ansible -i ./all-in-one bootstrap-servers || \
-{ echo -e "${RED}Exit code is $?."; read -p "Continue?" TEST; }
+{ echo -e "${RED}Exit code is $?.${DECOLOR}"; read -p "Continue?" TEST; }
 
 kolla-ansible -i ./all-in-one prechecks || \
-{ echo -e "${RED}Exit code is $?."; read -p "Continue?" TEST; }
+{ echo -e "${RED}Exit code is $?.${DECOLOR}"; read -p "Continue?" TEST; }
 
 kolla-ansible -i ./all-in-one deploy || \
-{ echo -e "${RED}Exit code is $?."; read -p "Continue?" TEST; }
+{ echo -e "${RED}Exit code is $?.${DECOLOR}"; read -p "Continue?" TEST; }
