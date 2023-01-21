@@ -4,6 +4,7 @@ trap cleanup 2
 
 function cleanup {
 echo "Cleaning up..."
+kolla-ansible -i ./all-in-one destroy
 sudo rm -rf $VENV_NAME all-in-one /etc/kolla
 exit
 }
