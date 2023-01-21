@@ -169,3 +169,26 @@ kolla-ansible -i ./all-in-one prechecks || \
 
 kolla-ansible -i ./all-in-one deploy || \
 { echo -e "${RED}Exit code is $?.${DECOLOR}"; read -p "Continue?" TEST; }
+
+echo -e "${GREEN}${BOLD}So far so good."
+echo -e "Press ${UGREEN}Enter${GREEN} to install \"python-openstackclient\"...${DECOLOR}"
+read TEST
+pip install python-openstackclient && echo -e "${GREEN}Done!${DECOLOR}"
+
+kolla-ansible post-deploy  /etc/kolla/admin-openrc.sh || \
+{ echo -e "${RED}Exit code is $?.${DECOLOR}"; read -p "Continue?" TEST; }
+
+source /etc/kolla/admin-openrc.sh
+
+$VENV_NAME/share/kolla-ansible/init-runonce
+
+PASSWORD=$(grep "keystone_admin_password" /etc/kolla/passwords.yml | awk {'print$2'})
+echo -e "${BGREEN}"
+echo "###################### Configuration is Done ######################"
+echo ""
+echo "Horizon URL: http://$IP"
+echo "Login:    \"admin\""
+echo "Password: \"$PASSWORD\""
+echo ""
+echo "###################################################################"
+echo -e "${DECOLOR}"
