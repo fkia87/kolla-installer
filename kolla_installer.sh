@@ -91,7 +91,8 @@ read -p "Enter the name of backeng VG for Cinder[cinder-volumes]: " VG
 
 sudo vgs | grep -q $VG || { echo "VG $VG not found."; cleanup; }
 
-sudo apt update && sudo apt upgrade -y
+sudo apt update
+# && sudo apt upgrade -y
 
 sudo apt -y install python3-dev libffi-dev gcc libssl-dev || error
 
