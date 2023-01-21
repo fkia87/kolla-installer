@@ -158,7 +158,7 @@ kolla-genpwd
 echo -e "\n${GREEN}Done!${DECOLOR}\n"
 
 echo -e "${GREEN}${BOLD}So far so good."
-echo -e "Press Enter to bootstrap...${DECOLOR}"
+echo -e "Press ${UGREEN}Enter${GREEN} to bootstrap...${DECOLOR}"
 read TEST
 kolla-ansible -i ./all-in-one bootstrap-servers || \
 { echo -e "${RED}Exit code is $?.${DECOLOR}"; read -p "Continue?" TEST; }
