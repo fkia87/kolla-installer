@@ -1,9 +1,6 @@
 #!/bin/bash
 
-trap cleanup 2
-
-echo -e "${GREEN}Sychronizing the time...${DECOLOR}"
-sudo systemctl restart systemd-timesyncd 
+trap cleanup 2 
 
 function cleanup {
 echo "Cleaning up..."
@@ -40,6 +37,9 @@ fi
 for file in ${files[@]}; do
     source $file
 done
+
+echo -e "${GREEN}Sychronizing the time...${DECOLOR}"
+sudo systemctl restart systemd-timesyncd
 
 case $1 in
 "" | latest)
