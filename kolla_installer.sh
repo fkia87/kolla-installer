@@ -2,6 +2,9 @@
 
 trap cleanup 2
 
+echo -e "${GREEN}Sychronizing the time...${DECOLOR}"
+sudo systemctl restart systemd-timesyncd 
+
 function cleanup {
 echo "Cleaning up..."
 kolla-ansible -i ./all-in-one destroy
