@@ -157,7 +157,8 @@ echo -e "\n${YELLOW}Generating password...${DECOLOR}\n"
 kolla-genpwd
 echo -e "\n${GREEN}Done!${DECOLOR}\n"
 
-echo -e "${GREEN}${BOLD}So far so good. Continue to bootstrap?${DECOLOR}"
+echo -e "${GREEN}${BOLD}So far so good."
+echo -e "Press Enter to bootstrap...${DECOLOR}"
 read TEST
 kolla-ansible -i ./all-in-one bootstrap-servers || \
 { echo -e "${RED}Exit code is $?.${DECOLOR}"; read -p "Continue?" TEST; }
