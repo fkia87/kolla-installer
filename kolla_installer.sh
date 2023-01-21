@@ -111,7 +111,8 @@ latest)
     ;;
 wallaby)
     pip install 'ansible<3.0' || error
-    pip install git+https://opendev.org/openstack/kolla-ansible@stable/wallaby || error
+    #pip install git+https://opendev.org/openstack/kolla-ansible@stable/wallaby || error
+    pip install 'kolla-ansible<12.9' || error
     ;;
 esac
 
