@@ -121,7 +121,11 @@ cp -r $VENV_NAME/share/kolla-ansible/etc_examples/kolla/* /etc/kolla/ || error
 #cp $VENV_NAME/share/kolla-ansible/ansible/inventory/* /etc/kolla/
 cp $VENV_NAME/share/kolla-ansible/ansible/inventory/all-in-one . || error
 
-kolla-ansible install-deps || error
+case $version in
+latest)
+    kolla-ansible install-deps || error
+    ;;
+esac
 
 #sudo mkdir -p /etc/ansible
 
