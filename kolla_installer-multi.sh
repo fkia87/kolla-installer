@@ -62,26 +62,26 @@ echo -e "Installing ${BLUE}${BOLD}$version${DECOLOR} version..."
 read -p "Enter a name for your virtual environment[test_venv]: " VENV_NAME
 [[ "$VENV_NAME" == "" ]] && VENV_NAME=test_venv
 
-find_mainif || exit 3
-while :
-do
-    echo -e "\nInterface ${BLUE}[$MAINIF]${DECOLOR} with IP address \e[1;34m[$(getifip $MAINIF)]\e[0m \
-is selected as main external interface for this server."
-    read -p "Do you wish to continue? [Y/n]" START
-    echo ""
-    if [[ $START == "y" ]] || [[ $START == "Y" ]] || [[ $START == "" ]]; then break; fi
-    if [[ $START == "n" ]] || [[ $START == "N" ]]; then exit; fi
-done
+# find_mainif || exit 3
+# while :
+# do
+#     echo -e "\nInterface ${BLUE}[$MAINIF]${DECOLOR} with IP address \e[1;34m[$(getifip $MAINIF)]\e[0m \
+# is selected as main external interface for this server."
+#     read -p "Do you wish to continue? [Y/n]" START
+#     echo ""
+#     if [[ $START == "y" ]] || [[ $START == "Y" ]] || [[ $START == "" ]]; then break; fi
+#     if [[ $START == "n" ]] || [[ $START == "N" ]]; then exit; fi
+# done
 
-IP=$(getifip ${MAINIF})
+# IP=$(getifip ${MAINIF})
 
-echo -e "${BLUE}Enter the name of Neutron interface:"
-select NEUTRON_IF in $(find /sys/class/net/ | rev | cut -d / -f1 | rev | sed '/^$/d' | grep -v lo)
-do
-    [[ "$NEUTRON_IF" == "" ]] && echo "Invalid selection"
-    [[ "$NEUTRON_IF" != "" ]] && break
-done
-echo -e "${DECOLOR}"
+# echo -e "${BLUE}Enter the name of Neutron interface:"
+# select NEUTRON_IF in $(find /sys/class/net/ | rev | cut -d / -f1 | rev | sed '/^$/d' | grep -v lo)
+# do
+#     [[ "$NEUTRON_IF" == "" ]] && echo "Invalid selection"
+#     [[ "$NEUTRON_IF" != "" ]] && break
+# done
+# echo -e "${DECOLOR}"
 
 [[ $(os) != "ubuntu" ]] && { echo -e "\n${RED}Unsupported distro!${DECOLOR}\n"; cleanup; }
 DISTRO=$(os)
