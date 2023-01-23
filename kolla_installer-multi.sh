@@ -59,23 +59,10 @@ wallaby | Wallaby)
 esac
 echo -e "Installing ${BLUE}${BOLD}$version${DECOLOR} version..."
 
-# find_mainif || exit 3
-# while :
-# do
-#     echo -e "\nInterface ${BLUE}[$MAINIF]${DECOLOR} with IP address \e[1;34m[$(getifip $MAINIF)]\e[0m \
-# is selected as main external interface for this server."
-#     read -p "Do you wish to continue? [Y/n]" START
-#     echo ""
-#     if [[ $START == "y" ]] || [[ $START == "Y" ]] || [[ $START == "" ]]; then break; fi
-#     if [[ $START == "n" ]] || [[ $START == "N" ]]; then exit; fi
-# done
-
 while [[ "$VIP" == "" ]]
 do
     read -p "Enter kolla internal VIP address : " VIP
 done
-
-# IP=$(getifip ${MAINIF})
 
 # echo -e "${BLUE}Enter the name of Neutron interface:"
 # select NEUTRON_IF in $(find /sys/class/net/ | rev | cut -d / -f1 | rev | sed '/^$/d' | grep -v lo)
