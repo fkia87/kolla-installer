@@ -59,9 +59,6 @@ wallaby | Wallaby)
 esac
 echo -e "Installing ${BLUE}${BOLD}$version${DECOLOR} version..."
 
-read -p "Enter a name for your virtual environment[test_venv]: " VENV_NAME
-[[ "$VENV_NAME" == "" ]] && VENV_NAME=test_venv
-
 # find_mainif || exit 3
 # while :
 # do
@@ -72,6 +69,11 @@ read -p "Enter a name for your virtual environment[test_venv]: " VENV_NAME
 #     if [[ $START == "y" ]] || [[ $START == "Y" ]] || [[ $START == "" ]]; then break; fi
 #     if [[ $START == "n" ]] || [[ $START == "N" ]]; then exit; fi
 # done
+
+while [[ "$VIP" == "" ]]
+do
+    read -p "Enter kolla internal VIP address : " VIP
+done
 
 # IP=$(getifip ${MAINIF})
 
@@ -98,7 +100,7 @@ sudo apt -y install python3-dev libffi-dev gcc libssl-dev || error
 
 #sudo apt -y install python3-pip
 
-sudo apt -y install python3-venv || error
+sudo apt -y install python3-venv ansible sshpass|| error
 
 python3 -m venv $VENV_NAME || error
 source $VENV_NAME/bin/activate || error
@@ -127,6 +129,13 @@ cp -r $VENV_NAME/share/kolla-ansible/etc_examples/kolla/* /etc/kolla/ || error
 #cp $VENV_NAME/share/kolla-ansible/ansible/inventory/* /etc/kolla/
 cp $VENV_NAME/share/kolla-ansible/ansible/inventory/* . || error
 
+echo '    StrictHostKeyChecking no' | sudo tee -a /etc/ssh/ssh_config
+
+echo -e "${GREEN}${BOLD}So far so good."
+echo -e "Press ${UGREEN}Enter${GREEN} to test the inventory...${DECOLOR}"
+read TEST
+ansible -i ./multinode all -m ping || error
+
 case $version in
 latest)
     kolla-ansible install-deps || error
@@ -142,18 +151,30 @@ esac
 #forks=100
 #EOF
 
-# cat << EOF | sudo tee -a /etc/kolla/globals.yml
-# enable_haproxy: "no"
-# kolla_internal_vip_address: "$IP"
-# docker_registry: registry.ficld.ir
-# network_interface: "$MAINIF"
-# neutron_external_interface: "$NEUTRON_IF"
-# enable_cinder: "yes"
-# enable_cinder_backend_lvm: "yes"
-# cinder_volume_group: "$VG"
-# kolla_base_distro: "$DISTRO"
-# EOF
+cat << EOF | sudo tee -a /etc/kolla/globals.yml
+enable_haproxy: "no"
+kolla_internal_vip_address: "$VIP"
+docker_registry: registry.ficld.ir
+network_interface: "ens3"
+neutron_external_interface: "ens8"
+#enable_cinder: "yes"
+#enable_cinder_backend_lvm: "yes"
+#cinder_volume_group: "$VG"
+kolla_base_distro: "$DISTRO"
+EOF
 
 echo -e "\n${YELLOW}Generating password...${DECOLOR}\n"
 kolla-genpwd
 echo -e "\n${GREEN}Done!${DECOLOR}\n"
+
+echo -e "${GREEN}${BOLD}So far so good."
+echo -e "Press ${UGREEN}Enter${GREEN} to bootstrap...${DECOLOR}"
+read TEST
+kolla-ansible -i ./multinode bootstrap-servers || \
+{ echo -e "${RED}Exit code is $?.${DECOLOR}"; read -p "Continue?" TEST; }
+
+kolla-ansible -i ./multinode prechecks || \
+{ echo -e "${RED}Exit code is $?.${DECOLOR}"; read -p "Continue?" TEST; }
+
+kolla-ansible -i ./multinode deploy || \
+{ echo -e "${RED}Exit code is $?.${DECOLOR}"; read -p "Continue?" TEST; }
