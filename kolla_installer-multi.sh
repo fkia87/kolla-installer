@@ -86,10 +86,10 @@ read -p "Enter a name for your virtual environment[test_venv]: " VENV_NAME
 [[ $(os) != "ubuntu" ]] && { echo -e "\n${RED}Unsupported distro!${DECOLOR}\n"; cleanup; }
 DISTRO=$(os)
 
-read -p "Enter the name of backeng VG for Cinder[cinder-volumes]: " VG
-[[ "$VG" == "" ]] && VG=cinder-volumes
+# read -p "Enter the name of backeng VG for Cinder[cinder-volumes]: " VG
+# [[ "$VG" == "" ]] && VG=cinder-volumes
 
-sudo vgs | grep -q $VG || { echo "VG $VG not found."; cleanup; }
+# sudo vgs | grep -q $VG || { echo "VG $VG not found."; cleanup; }
 
 sudo apt update
 # && sudo apt upgrade -y
