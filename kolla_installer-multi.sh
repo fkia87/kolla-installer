@@ -142,17 +142,17 @@ esac
 #forks=100
 #EOF
 
-cat << EOF | sudo tee -a /etc/kolla/globals.yml
-enable_haproxy: "no"
-kolla_internal_vip_address: "$IP"
-docker_registry: registry.ficld.ir
-network_interface: "$MAINIF"
-neutron_external_interface: "$NEUTRON_IF"
-enable_cinder: "yes"
-enable_cinder_backend_lvm: "yes"
-cinder_volume_group: "$VG"
-kolla_base_distro: "$DISTRO"
-EOF
+# cat << EOF | sudo tee -a /etc/kolla/globals.yml
+# enable_haproxy: "no"
+# kolla_internal_vip_address: "$IP"
+# docker_registry: registry.ficld.ir
+# network_interface: "$MAINIF"
+# neutron_external_interface: "$NEUTRON_IF"
+# enable_cinder: "yes"
+# enable_cinder_backend_lvm: "yes"
+# cinder_volume_group: "$VG"
+# kolla_base_distro: "$DISTRO"
+# EOF
 
 echo -e "\n${YELLOW}Generating password...${DECOLOR}\n"
 kolla-genpwd
