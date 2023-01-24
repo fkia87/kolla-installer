@@ -4,7 +4,7 @@ trap cleanup 2
 
 function cleanup {
 echo "Cleaning up..."
-kolla-ansible -i ./all-in-one destroy
+kolla-ansible -i ./all-in-one destroy > /dev/null 2>&1
 sudo rm -rf $VENV_NAME all-in-one /etc/kolla
 exit
 }
@@ -38,6 +38,9 @@ for file in ${files[@]}; do
     source $file
 done
 
+[[ $(os) != "ubuntu" ]] && { echo -e "\n${RED}Unsupported distro!${DECOLOR}\n"; cleanup; }
+DISTRO=$(os)
+
 echo -e "${GREEN}Sychronizing the time...${DECOLOR}"
 sudo systemctl restart systemd-timesyncd
 
@@ -64,26 +67,20 @@ do
     read -p "Enter kolla internal VIP address : " VIP
 done
 
-# echo -e "${BLUE}Enter the name of Neutron interface:"
-# select NEUTRON_IF in $(find /sys/class/net/ | rev | cut -d / -f1 | rev | sed '/^$/d' | grep -v lo)
-# do
-#     [[ "$NEUTRON_IF" == "" ]] && echo "Invalid selection"
-#     [[ "$NEUTRON_IF" != "" ]] && break
-# done
-# echo -e "${DECOLOR}"
+while [[ "$IF" == "" ]]
+do
+    read -p "Enter the name of main interface : " IF
+done
 
-[[ $(os) != "ubuntu" ]] && { echo -e "\n${RED}Unsupported distro!${DECOLOR}\n"; cleanup; }
-DISTRO=$(os)
+while [[ "$NEUTRON_IF" == "" ]]
+do
+    read -p "Enter the name of Neutron interface : " NEUTRON_IF
+done
 
-# read -p "Enter the name of backeng VG for Cinder[cinder-volumes]: " VG
-# [[ "$VG" == "" ]] && VG=cinder-volumes
+read -p "Enter the name of backeng VG for Cinder[cinder-volumes]: " VG
+[[ "$VG" == "" ]] && VG=cinder-volumes
 
-# sudo vgs | grep -q $VG || { echo "VG $VG not found."; cleanup; }
-
-sudo apt update
-# && sudo apt upgrade -y
-
-sudo apt -y install python3-dev libffi-dev gcc libssl-dev || error
+sudo apt update && sudo apt -y install python3-dev libffi-dev gcc libssl-dev || error
 
 #sudo apt -y install python3-pip
 
@@ -101,26 +98,23 @@ latest)
     ;;
 wallaby)
     pip install 'ansible<3.0' || error
-    #pip install git+https://opendev.org/openstack/kolla-ansible@stable/wallaby || error
     pip install 'kolla-ansible<12.9' || error
     ;;
 esac
 
 sudo rm -rf /etc/kolla ./all-in-one
 sudo mkdir /etc/kolla
-
 sudo chown $USER:$(id -gn $USER) /etc/kolla
-
 cp -r $VENV_NAME/share/kolla-ansible/etc_examples/kolla/* /etc/kolla/ || error
-
-#cp $VENV_NAME/share/kolla-ansible/ansible/inventory/* /etc/kolla/
 cp $VENV_NAME/share/kolla-ansible/ansible/inventory/* . || error
 
+sed -i '/StrictHostKeyChecking/d' /etc/ssh/ssh_config
 echo '    StrictHostKeyChecking no' | sudo tee -a /etc/ssh/ssh_config
 
 echo -e "${GREEN}${BOLD}So far so good."
 echo -e "Press ${UGREEN}Enter${GREEN} to test the inventory...${DECOLOR}"
 read TEST
+
 ansible -i ./multinode all -m ping || error
 
 case $version in
@@ -128,8 +122,6 @@ latest)
     kolla-ansible install-deps || error
     ;;
 esac
-
-#sudo mkdir -p /etc/ansible
 
 #cat << EOF | sudo tee -a /etc/ansible/ansible.cfg
 #[defaults]
@@ -142,11 +134,11 @@ cat << EOF | sudo tee -a /etc/kolla/globals.yml
 enable_haproxy: "no"
 kolla_internal_vip_address: "$VIP"
 docker_registry: registry.ficld.ir
-network_interface: "ens3"
-neutron_external_interface: "ens8"
-#enable_cinder: "yes"
-#enable_cinder_backend_lvm: "yes"
-#cinder_volume_group: "$VG"
+network_interface: "$IF"
+neutron_external_interface: "$NEUTRON_IF"
+enable_cinder: "yes"
+enable_cinder_backend_lvm: "yes"
+cinder_volume_group: "$VG"
 kolla_base_distro: "$DISTRO"
 EOF
 
